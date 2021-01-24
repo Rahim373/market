@@ -1,13 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using Market.Catalog.Domain.Context;
+﻿using Market.Catalog.Domain.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Market.Catalog.Applications.Categories.Manager
 {
     public interface ICategoryManager
     {
         ValueTask<string> GenerateUniqueSlug(string slug, string id = default);
+        ValueTask<bool> IsParentExistsAsync(string parentCategoryId, CancellationToken cancellationToken);
     }
 
     public class CategoryManager : ICategoryManager
@@ -29,7 +30,7 @@ namespace Market.Catalog.Applications.Categories.Manager
             else
             {
                 exists = await _db.Categories.AnyAsync(c =>
-                    !string.Equals(c.Id.ToLower(), id.ToLower()) 
+                    !string.Equals(c.Id.ToLower(), id.ToLower())
                     && string.Equals(c.Slug.ToLower(), slug.Trim().ToLower()));
             }
             return await new ValueTask<bool>(!exists);
@@ -39,12 +40,18 @@ namespace Market.Catalog.Applications.Categories.Manager
         {
             int count = 1;
             var generatedSlug = slug;
-            while (! await isSlugUniqueAsync(id, generatedSlug) )
+            while (!await isSlugUniqueAsync(id, generatedSlug))
             {
                 generatedSlug = $"{slug}-{count++}";
             }
 
             return await new ValueTask<string>(generatedSlug);
+        }
+
+        public async ValueTask<bool> IsParentExistsAsync(string id, CancellationToken cancellationToken)
+        {
+            var exists = await _db.Categories.AnyAsync(c => c.Id.ToLower() == id.ToLower(), cancellationToken: cancellationToken);
+            return await new ValueTask<bool>(exists);
         }
     }
 }

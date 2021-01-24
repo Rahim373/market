@@ -46,12 +46,11 @@ namespace Market.Catalog.Applications.Categories.Cqrs
 
                 if (!string.IsNullOrEmpty(command.ParentCategoryId))
                 {
-                    var isParentExist = await _db.Categories.AnyAsync(
-                        c => c.Id.ToLower() == command.ParentCategoryId.ToLower(),
-                        cancellationToken: cancellationToken);
+                    var isParentExist = await _manager.IsParentExistsAsync(command.ParentCategoryId, cancellationToken);
+                    
                     if (!isParentExist)
                     {
-                        response.AddMessage("Invalid title", MessageType.Error);
+                        response.AddMessage("Invalid parent category.", MessageType.Error);
                         return await Task.FromResult(response);
                     }
                 }
