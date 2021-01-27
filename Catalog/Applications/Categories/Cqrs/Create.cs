@@ -1,13 +1,12 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Mapster;
+﻿using Mapster;
 using Market.Catalog.Applications.Categories.Dtos;
 using Market.Catalog.Applications.Categories.Manager;
 using Market.Catalog.Domain.Context;
 using Market.Catalog.Domain.Models;
 using Market.Common;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Market.Catalog.Applications.Categories.Cqrs
 {
@@ -47,7 +46,7 @@ namespace Market.Catalog.Applications.Categories.Cqrs
                 if (!string.IsNullOrEmpty(command.ParentCategoryId))
                 {
                     var isParentExist = await _manager.IsParentExistsAsync(command.ParentCategoryId, cancellationToken);
-                    
+
                     if (!isParentExist)
                     {
                         response.AddMessage("Invalid parent category.", MessageType.Error);

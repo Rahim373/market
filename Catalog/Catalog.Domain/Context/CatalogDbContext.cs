@@ -14,5 +14,6 @@ namespace Market.Catalog.Domain.Context
         public IDbConnection Connection => Database.GetDbConnection();
 
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
     }
 }
