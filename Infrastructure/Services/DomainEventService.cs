@@ -1,14 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using Market.Application.Interfaces;
+﻿using Market.Application.Interfaces;
 using Market.Application.Models;
 using Market.Domain.Common;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace Market.Infrastructure.Services
 {
-    public class DomainEventService  : IDomainEventService
+    public class DomainEventService : IDomainEventService
     {
         private readonly ILogger<DomainEventService> _logger;
         private readonly IPublisher _mediator;

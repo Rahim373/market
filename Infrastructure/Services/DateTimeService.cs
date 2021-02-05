@@ -2,7 +2,7 @@
 
 namespace Market.Infrastructure.Services
 {
-    public class DateTime : IDateTime
+    public class DateTimeService : IDateTime
     {
         public System.DateTime Now => System.DateTime.UtcNow;
     }

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Market.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Market.Application.Interfaces
 {

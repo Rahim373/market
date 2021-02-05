@@ -1,14 +1,13 @@
-using MediatR;
+using Market.Api.Services;
+using Market.Application.DI;
+using Market.Application.Interfaces;
+using Market.Infrastructure.DI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
-using System.Reflection;
-using Market.Application.Interfaces;
-using Market.Infrastructure.Persistence;
 
 namespace Market.Catalog.Api
 {
@@ -26,16 +25,10 @@ namespace Market.Catalog.Api
         {
             services.AddControllers();
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
-            });
+            services.InstallApplication(_configuration);
+            services.InstallInfrastructure(_configuration);
 
-            var assemblies = Assembly.GetAssembly(typeof(Startup)).GetReferencedAssemblies()
-                .Where(x => x.Name.StartsWith("Market.Applications"))
-                .Select(x => Assembly.Load(x.Name))
-                .ToArray();
-            services.AddMediatR(assemblies);
+            services.AddTransient<ICurrentUserService, CurrentUserService>();
 
             services.AddCors(options =>
             {
@@ -58,7 +51,6 @@ namespace Market.Catalog.Api
             app.UseHttpsRedirection();
             app.UseCors(corsPolicy);
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

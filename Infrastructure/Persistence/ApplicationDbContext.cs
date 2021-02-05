@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Market.Infrastructure.Persistence
 {
@@ -18,13 +17,12 @@ namespace Market.Infrastructure.Persistence
         private readonly IDateTime _dateTime;
         private readonly IDomainEventService _domainEventService;
 
-        public ApplicationDbContext(ICurrentUserService currentUserService, IDateTime dateTime, IDomainEventService domainEventService)
+        public ApplicationDbContext(DbContextOptions options, ICurrentUserService currentUserService, IDateTime dateTime, IDomainEventService domainEventService) : base (options)
         {
             _currentUserService = currentUserService;
             _dateTime = dateTime;
             _domainEventService = domainEventService;
         }
-        
         
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
@@ -60,7 +58,7 @@ namespace Market.Infrastructure.Persistence
 
             var result = await base.SaveChangesAsync(cancellationToken);
 
-            await DispatchEvents();
+            // await DispatchEvents();
 
             return result;
         }
@@ -84,7 +82,11 @@ namespace Market.Infrastructure.Persistence
                     .Select(x => x.Entity.DomainEvents)
                     .SelectMany(x => x)
                     .FirstOrDefault(domainEvent => !domainEvent.IsPublished);
-                if (domainEventEntity == null) break;
+
+                if (domainEventEntity == null)
+                {
+                    break;
+                }
 
                 domainEventEntity.IsPublished = true;
                 await _domainEventService.Publish(domainEventEntity);
